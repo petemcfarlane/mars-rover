@@ -82,7 +82,7 @@ export const isLost = ([m, n]: Grid, { x, y }: Position): boolean => {
   return x < 0 || x > m || y < 0 || y > n;
 };
 
-export const interpretWithinGrid = (grid: Grid, start: Rover, ...instructions: Instruction[]): any => {
+export const interpretWithinGrid = (grid: Grid, start: Rover, ...instructions: Instruction[]): Rover => {
   let r: Rover = start;
   for (const i of instructions) {
     const test = interpretFunction(i)(r);
