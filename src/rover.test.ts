@@ -13,7 +13,7 @@ import {
   rotateR,
   Rover,
   run,
-} from '.';
+} from './rover';
 
 test('Rotating the Mars Rover', () => {
   const p = { x: 0, y: 0 };
