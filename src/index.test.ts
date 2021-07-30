@@ -30,8 +30,8 @@ test('Interpreting instructions', () => {
   expect(interpret(start, Instruction.R)).toEqual([{ x: 0, y: 0 }, Orientation.E]);
   expect(interpret(start, Instruction.L)).toEqual([{ x: 0, y: 0 }, Orientation.W]);
 
-  expect([Instruction.F, Instruction.F, Instruction.F].reduce(interpret, start)).toEqual([
-    { x: 0, y: 3 },
-    Orientation.N,
+  expect(interpret(start, Instruction.F, Instruction.F, Instruction.R, Instruction.F)).toEqual([
+    { x: 1, y: 2 },
+    Orientation.E,
   ]);
 });

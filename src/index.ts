@@ -57,13 +57,16 @@ export enum Instruction {
   L = 'L',
 }
 
-export const interpret = (rover: Rover, instruction: Instruction): Rover => {
+const interpretFunction = (instruction: Instruction) => {
   switch (instruction) {
     case Instruction.F:
-      return forward(rover);
+      return forward;
     case Instruction.R:
-      return rotateR(rover);
+      return rotateR;
     case Instruction.L:
-      return rotateL(rover);
+      return rotateL;
   }
 };
+
+export const interpret = (start: Rover, ...instructions: Instruction[]): Rover =>
+  instructions.reduce((r: Rover, i: Instruction) => interpretFunction(i)(r), start);
