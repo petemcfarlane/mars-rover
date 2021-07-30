@@ -1,4 +1,4 @@
-import { forward, Instruction, interpret, Orientation, rotateL, rotateR, Rover } from '.';
+import { forward, Instruction, interpret, Orientation, parseLine, rotateL, rotateR, Rover } from '.';
 
 test('Rotating the Mars Rover', () => {
   const p = { x: 0, y: 0 };
@@ -34,4 +34,12 @@ test('Interpreting instructions', () => {
     { x: 1, y: 2 },
     Orientation.E,
   ]);
+});
+
+test('Parse rover line', () => {
+  const input = '(2, 3, E) LFRFF';
+  const expectedRover: Rover = [{ x: 2, y: 3 }, Orientation.E];
+  const instructions = [Instruction.L, Instruction.F, Instruction.R, Instruction.F, Instruction.F];
+
+  expect(parseLine(input)).toEqual([expectedRover, instructions]);
 });

@@ -70,3 +70,16 @@ const interpretFunction = (instruction: Instruction) => {
 
 export const interpret = (start: Rover, ...instructions: Instruction[]): Rover =>
   instructions.reduce((r: Rover, i: Instruction) => interpretFunction(i)(r), start);
+
+export const parseLine = (input: string): [Rover, Instruction[]] => {
+  const matches = /\((\d+), (\d+), ([NESW])\) ([LRF]+)/.exec(input);
+  if (matches === null) {
+    throw new Error(`Couldn't parse line ${input}`);
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, x, y, o, instructs] = matches;
+  const rover: Rover = [{ x: Number(x), y: Number(y) }, Orientation[o as keyof typeof Orientation]];
+  const instructions = instructs.split('').map((i) => Instruction[i as keyof typeof Instruction]);
+
+  return [rover, instructions];
+};
