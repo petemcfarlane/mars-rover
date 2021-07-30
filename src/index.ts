@@ -10,44 +10,47 @@ export interface Position {
   y: number;
 }
 
-export type Rover = [Position, Orientation];
+export interface Rover {
+  p: Position;
+  o: Orientation;
+}
 
-export const rotateR = ([p, o]: Rover): Rover => {
+export const rotateR = ({ o, ...rest }: Rover): Rover => {
   switch (o) {
     case Orientation.N:
-      return [p, Orientation.E];
+      return { ...rest, o: Orientation.E };
     case Orientation.E:
-      return [p, Orientation.S];
+      return { ...rest, o: Orientation.S };
     case Orientation.S:
-      return [p, Orientation.W];
+      return { ...rest, o: Orientation.W };
     case Orientation.W:
-      return [p, Orientation.N];
+      return { ...rest, o: Orientation.N };
   }
 };
 
-export const rotateL = ([p, o]: Rover): Rover => {
+export const rotateL = ({ o, ...rest }: Rover): Rover => {
   switch (o) {
     case Orientation.N:
-      return [p, Orientation.W];
+      return { ...rest, o: Orientation.W };
     case Orientation.W:
-      return [p, Orientation.S];
+      return { ...rest, o: Orientation.S };
     case Orientation.S:
-      return [p, Orientation.E];
+      return { ...rest, o: Orientation.E };
     case Orientation.E:
-      return [p, Orientation.N];
+      return { ...rest, o: Orientation.N };
   }
 };
 
-export const forward = ([{ x, y }, o]: Rover): Rover => {
+export const forward = ({ p: { x, y }, o }: Rover): Rover => {
   switch (o) {
     case Orientation.N:
-      return [{ x, y: y + 1 }, o];
+      return { p: { x, y: y + 1 }, o };
     case Orientation.E:
-      return [{ x: x + 1, y }, o];
+      return { p: { x: x + 1, y }, o };
     case Orientation.S:
-      return [{ x, y: y - 1 }, o];
+      return { p: { x, y: y - 1 }, o };
     case Orientation.W:
-      return [{ x: x - 1, y }, o];
+      return { p: { x: x - 1, y }, o };
   }
 };
 
@@ -78,7 +81,7 @@ export const parseLine = (input: string): [Rover, Instruction[]] => {
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, x, y, o, instructs] = matches;
-  const rover: Rover = [{ x: Number(x), y: Number(y) }, Orientation[o as keyof typeof Orientation]];
+  const rover: Rover = { p: { x: Number(x), y: Number(y) }, o: Orientation[o as keyof typeof Orientation] };
   const instructions = instructs.split('').map((i) => Instruction[i as keyof typeof Instruction]);
 
   return [rover, instructions];
