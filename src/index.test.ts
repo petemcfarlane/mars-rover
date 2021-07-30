@@ -1,4 +1,16 @@
-import { forward, Instruction, interpret, Orientation, parseLine, rotateL, rotateR, Rover } from '.';
+import {
+  forward,
+  Grid,
+  Instruction,
+  interpret,
+  interpretWithinGrid,
+  isLost,
+  Orientation,
+  parseLine,
+  rotateL,
+  rotateR,
+  Rover,
+} from '.';
 
 test('Rotating the Mars Rover', () => {
   const p = { x: 0, y: 0 };
@@ -61,7 +73,22 @@ test('Parse rover line', () => {
   expect(parseLine(input)).toEqual([expectedRover, instructions]);
 });
 
-test('Lost rover maintains position before it was lost', () => {
-  const gridsize = { n: 3, m: 4 };
-  // const start =;
+test('Lost rover maintains previous position before it was lost', () => {
+  const grid: Grid = [3, 2];
+  expect(isLost(grid, { x: 3, y: 0 })).toEqual(true);
+  expect(isLost(grid, { x: -1, y: 0 })).toEqual(true);
+  expect(isLost(grid, { x: 0, y: 0 })).toEqual(false);
+  expect(isLost(grid, { x: 1, y: 0 })).toEqual(false);
+  expect(isLost(grid, { x: 1, y: -2 })).toEqual(true);
+  expect(isLost(grid, { x: 1, y: 4 })).toEqual(true);
+  const start: Rover = {
+    p: { x: 0, y: 0 },
+    o: Orientation.N,
+    isLost: false,
+  };
+  expect(interpretWithinGrid(grid, start, Instruction.F, Instruction.F, Instruction.F, Instruction.F)).toEqual({
+    p: { x: 0, y: 1 },
+    o: Orientation.N,
+    isLost: true,
+  });
 });

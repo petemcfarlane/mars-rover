@@ -75,6 +75,28 @@ const interpretFunction = (instruction: Instruction) => {
 export const interpret = (start: Rover, ...instructions: Instruction[]): Rover =>
   instructions.reduce((r: Rover, i: Instruction) => interpretFunction(i)(r), start);
 
+export type Grid = [number, number];
+
+export const isLost = ([m, n]: Grid, { x, y }: Position): boolean => {
+  return x < 0 || x >= m || y < 0 || y >= n;
+};
+
+export const interpretWithinGrid = (grid: Grid, start: Rover, ...instructions: Instruction[]): any => {
+  let r: Rover = start;
+  for (const i of instructions) {
+    const test = interpretFunction(i)(r);
+    const lost = isLost(grid, test.p);
+    if (lost) {
+      return {
+        ...r,
+        isLost: true,
+      };
+    }
+    r = test;
+  }
+  return r;
+};
+
 export const parseLine = (input: string): [Rover, Instruction[]] => {
   const matches = /\((\d+), (\d+), ([NESW])\) ([LRF]+)/.exec(input);
   if (matches === null) {
