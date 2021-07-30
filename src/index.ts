@@ -37,3 +37,16 @@ export const rotateL = ([p, o]: Rover): Rover => {
       return [p, Orientation.N];
   }
 };
+
+export const forward = ([{ x, y }, o]: Rover): Rover => {
+  switch (o) {
+    case Orientation.N:
+      return [{ x, y: y + 1 }, o];
+    case Orientation.E:
+      return [{ x: x + 1, y }, o];
+    case Orientation.S:
+      return [{ x, y: y - 1 }, o];
+    case Orientation.W:
+      return [{ x: x - 1, y }, o];
+  }
+};
