@@ -1,4 +1,5 @@
 import {
+  format,
   forward,
   Grid,
   Instruction,
@@ -11,6 +12,7 @@ import {
   rotateL,
   rotateR,
   Rover,
+  run,
 } from '.';
 
 test('Rotating the Mars Rover', () => {
@@ -68,7 +70,7 @@ test('Interpreting instructions', () => {
 
 test('Lost rover maintains previous position before it was lost', () => {
   const grid: Grid = [3, 2];
-  expect(isLost(grid, { x: 3, y: 0 })).toEqual(true);
+  expect(isLost(grid, { x: 4, y: 0 })).toEqual(true);
   expect(isLost(grid, { x: -1, y: 0 })).toEqual(true);
   expect(isLost(grid, { x: 0, y: 0 })).toEqual(false);
   expect(isLost(grid, { x: 1, y: 0 })).toEqual(false);
@@ -80,7 +82,7 @@ test('Lost rover maintains previous position before it was lost', () => {
     isLost: false,
   };
   expect(interpretWithinGrid(grid, start, Instruction.F, Instruction.F, Instruction.F, Instruction.F)).toEqual({
-    p: { x: 0, y: 1 },
+    p: { x: 0, y: 2 },
     o: Orientation.N,
     isLost: true,
   });
@@ -97,4 +99,32 @@ test('Parse rover line', () => {
 test('Parse grid size', () => {
   const input = '3 4';
   expect(parseGrid(input)).toEqual([3, 4]);
+});
+
+test('Format rover to output string', () => {
+  const rover: Rover = { p: { x: 1, y: 2 }, o: Orientation.S, isLost: false };
+  const lostRover: Rover = { p: { x: 7, y: 1 }, o: Orientation.E, isLost: true };
+
+  expect(format(rover)).toEqual(`(1, 2, S)`);
+  expect(format(lostRover)).toEqual(`(7, 1, E) LOST`);
+});
+
+test('Parses an input to expected output', () => {
+  const input = `4 8
+(2, 3, E) LFRFF
+(0, 2, N) FFLFRFF
+`;
+  const expected = `(4, 4, E)
+(0, 4, W) LOST`;
+
+  expect(run(input)).toEqual(expected);
+
+  const input2 = `4 8
+(2, 3, N) FLLFR
+(1, 0, S) FFRLF
+`;
+  const expected2 = `(2, 3, W)
+(1, 0, S) LOST`;
+
+  expect(run(input2)).toEqual(expected2);
 });

@@ -1,8 +1,8 @@
 export enum Orientation {
-  N,
-  E,
-  S,
-  W,
+  N = 'N',
+  E = 'E',
+  S = 'S',
+  W = 'W',
 }
 
 export interface Position {
@@ -77,8 +77,9 @@ export const interpret = (start: Rover, ...instructions: Instruction[]): Rover =
 
 export type Grid = [number, number];
 
+// todo, check, is this inclusive or exclusive?
 export const isLost = ([m, n]: Grid, { x, y }: Position): boolean => {
-  return x < 0 || x >= m || y < 0 || y >= n;
+  return x < 0 || x > m || y < 0 || y > n;
 };
 
 export const interpretWithinGrid = (grid: Grid, start: Rover, ...instructions: Instruction[]): any => {
@@ -120,4 +121,17 @@ export const parseGrid = (input: string): Grid => {
     throw new Error(`Couldn't parse grid ${input}`);
   }
   return <Grid>matches.slice(1, 3).map(Number);
+};
+
+export const format = ({ p, o, isLost }: Rover): string => `(${p.x}, ${p.y}, ${o})${isLost ? ' LOST' : ''}`;
+
+export const run = (input: string): string => {
+  const [gridInput, ...restInput] = input.trim().split('\n');
+  const grid = parseGrid(gridInput);
+  return restInput
+    .map((line) => {
+      const [rover, instructions] = parseLine(line);
+      return format(interpretWithinGrid(grid, rover, ...instructions));
+    })
+    .join('\n');
 };
