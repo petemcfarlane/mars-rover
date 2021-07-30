@@ -11,8 +11,9 @@ export interface Position {
 }
 
 export interface Rover {
-  p: Position;
-  o: Orientation;
+  readonly p: Position;
+  readonly o: Orientation;
+  readonly isLost: boolean;
 }
 
 export const rotateR = ({ o, ...rest }: Rover): Rover => {
@@ -41,16 +42,16 @@ export const rotateL = ({ o, ...rest }: Rover): Rover => {
   }
 };
 
-export const forward = ({ p: { x, y }, o }: Rover): Rover => {
+export const forward = ({ p: { x, y }, o, ...rest }: Rover): Rover => {
   switch (o) {
     case Orientation.N:
-      return { p: { x, y: y + 1 }, o };
+      return { ...rest, p: { x, y: y + 1 }, o };
     case Orientation.E:
-      return { p: { x: x + 1, y }, o };
+      return { ...rest, p: { x: x + 1, y }, o };
     case Orientation.S:
-      return { p: { x, y: y - 1 }, o };
+      return { ...rest, p: { x, y: y - 1 }, o };
     case Orientation.W:
-      return { p: { x: x - 1, y }, o };
+      return { ...rest, p: { x: x - 1, y }, o };
   }
 };
 
@@ -81,7 +82,11 @@ export const parseLine = (input: string): [Rover, Instruction[]] => {
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, x, y, o, instructs] = matches;
-  const rover: Rover = { p: { x: Number(x), y: Number(y) }, o: Orientation[o as keyof typeof Orientation] };
+  const rover: Rover = {
+    p: { x: Number(x), y: Number(y) },
+    o: Orientation[o as keyof typeof Orientation],
+    isLost: false,
+  };
   const instructions = instructs.split('').map((i) => Instruction[i as keyof typeof Instruction]);
 
   return [rover, instructions];

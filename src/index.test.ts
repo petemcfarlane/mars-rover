@@ -2,7 +2,7 @@ import { forward, Instruction, interpret, Orientation, parseLine, rotateL, rotat
 
 test('Rotating the Mars Rover', () => {
   const p = { x: 0, y: 0 };
-  const start: Rover = { p, o: Orientation.N };
+  const start: Rover = { p, o: Orientation.N, isLost: false };
 
   expect(rotateR(start).o).toEqual(Orientation.E);
   expect(rotateR(rotateR(start)).o).toEqual(Orientation.S);
@@ -18,27 +18,44 @@ test('Rotating the Mars Rover', () => {
 test('Moving the Mars Rover', () => {
   const p = { x: 0, y: 0 };
 
-  expect(forward({ p, o: Orientation.N })).toEqual({ p: { x: 0, y: 1 }, o: Orientation.N });
-  expect(forward({ p, o: Orientation.E })).toEqual({ p: { x: 1, y: 0 }, o: Orientation.E });
-  expect(forward({ p, o: Orientation.S })).toEqual({ p: { x: 0, y: -1 }, o: Orientation.S });
-  expect(forward({ p, o: Orientation.W })).toEqual({ p: { x: -1, y: 0 }, o: Orientation.W });
+  expect(forward({ p, o: Orientation.N, isLost: false })).toEqual({
+    p: { x: 0, y: 1 },
+    o: Orientation.N,
+    isLost: false,
+  });
+  expect(forward({ p, o: Orientation.E, isLost: false })).toEqual({
+    p: { x: 1, y: 0 },
+    o: Orientation.E,
+    isLost: false,
+  });
+  expect(forward({ p, o: Orientation.S, isLost: false })).toEqual({
+    p: { x: 0, y: -1 },
+    o: Orientation.S,
+    isLost: false,
+  });
+  expect(forward({ p, o: Orientation.W, isLost: false })).toEqual({
+    p: { x: -1, y: 0 },
+    o: Orientation.W,
+    isLost: false,
+  });
 });
 
 test('Interpreting instructions', () => {
-  const start: Rover = { p: { x: 0, y: 0 }, o: Orientation.N };
-  expect(interpret(start, Instruction.F)).toEqual({ p: { x: 0, y: 1 }, o: Orientation.N });
-  expect(interpret(start, Instruction.R)).toEqual({ p: { x: 0, y: 0 }, o: Orientation.E });
-  expect(interpret(start, Instruction.L)).toEqual({ p: { x: 0, y: 0 }, o: Orientation.W });
+  const start: Rover = { p: { x: 0, y: 0 }, o: Orientation.N, isLost: false };
+  expect(interpret(start, Instruction.F)).toEqual({ p: { x: 0, y: 1 }, o: Orientation.N, isLost: false });
+  expect(interpret(start, Instruction.R)).toEqual({ p: { x: 0, y: 0 }, o: Orientation.E, isLost: false });
+  expect(interpret(start, Instruction.L)).toEqual({ p: { x: 0, y: 0 }, o: Orientation.W, isLost: false });
 
   expect(interpret(start, Instruction.F, Instruction.F, Instruction.R, Instruction.F)).toEqual({
     p: { x: 1, y: 2 },
     o: Orientation.E,
+    isLost: false,
   });
 });
 
 test('Parse rover line', () => {
   const input = '(2, 3, E) LFRFF';
-  const expectedRover: Rover = { p: { x: 2, y: 3 }, o: Orientation.E };
+  const expectedRover: Rover = { p: { x: 2, y: 3 }, o: Orientation.E, isLost: false };
   const instructions = [Instruction.L, Instruction.F, Instruction.R, Instruction.F, Instruction.F];
 
   expect(parseLine(input)).toEqual([expectedRover, instructions]);
