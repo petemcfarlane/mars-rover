@@ -6,6 +6,7 @@ import {
   interpretWithinGrid,
   isLost,
   Orientation,
+  parseGrid,
   parseLine,
   rotateL,
   rotateR,
@@ -65,14 +66,6 @@ test('Interpreting instructions', () => {
   });
 });
 
-test('Parse rover line', () => {
-  const input = '(2, 3, E) LFRFF';
-  const expectedRover: Rover = { p: { x: 2, y: 3 }, o: Orientation.E, isLost: false };
-  const instructions = [Instruction.L, Instruction.F, Instruction.R, Instruction.F, Instruction.F];
-
-  expect(parseLine(input)).toEqual([expectedRover, instructions]);
-});
-
 test('Lost rover maintains previous position before it was lost', () => {
   const grid: Grid = [3, 2];
   expect(isLost(grid, { x: 3, y: 0 })).toEqual(true);
@@ -91,4 +84,17 @@ test('Lost rover maintains previous position before it was lost', () => {
     o: Orientation.N,
     isLost: true,
   });
+});
+
+test('Parse rover line', () => {
+  const input = '(2, 3, E) LFRFF';
+  const expectedRover: Rover = { p: { x: 2, y: 3 }, o: Orientation.E, isLost: false };
+  const instructions = [Instruction.L, Instruction.F, Instruction.R, Instruction.F, Instruction.F];
+
+  expect(parseLine(input)).toEqual([expectedRover, instructions]);
+});
+
+test('Parse grid size', () => {
+  const input = '3 4';
+  expect(parseGrid(input)).toEqual([3, 4]);
 });

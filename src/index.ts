@@ -113,3 +113,11 @@ export const parseLine = (input: string): [Rover, Instruction[]] => {
 
   return [rover, instructions];
 };
+
+export const parseGrid = (input: string): Grid => {
+  const matches = /(\d+) (\d+)/.exec(input);
+  if (matches === null) {
+    throw new Error(`Couldn't parse grid ${input}`);
+  }
+  return <Grid>matches.slice(1, 3).map(Number);
+};
