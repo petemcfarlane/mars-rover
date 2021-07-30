@@ -50,3 +50,20 @@ export const forward = ([{ x, y }, o]: Rover): Rover => {
       return [{ x: x - 1, y }, o];
   }
 };
+
+export enum Instruction {
+  F = 'F',
+  R = 'R',
+  L = 'L',
+}
+
+export const interpret = (instruction: Instruction, rover: Rover): Rover => {
+  switch (instruction) {
+    case Instruction.F:
+      return forward(rover);
+    case Instruction.R:
+      return rotateR(rover);
+    case Instruction.L:
+      return rotateL(rover);
+  }
+};
