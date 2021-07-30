@@ -26,7 +26,12 @@ test('Moving the Mars Rover', () => {
 
 test('Interpreting instructions', () => {
   const start: Rover = [{ x: 0, y: 0 }, Orientation.N];
-  expect(interpret(Instruction.F, start)).toEqual([{ x: 0, y: 1 }, Orientation.N]);
-  expect(interpret(Instruction.R, start)).toEqual([{ x: 0, y: 0 }, Orientation.E]);
-  expect(interpret(Instruction.L, start)).toEqual([{ x: 0, y: 0 }, Orientation.W]);
+  expect(interpret(start, Instruction.F)).toEqual([{ x: 0, y: 1 }, Orientation.N]);
+  expect(interpret(start, Instruction.R)).toEqual([{ x: 0, y: 0 }, Orientation.E]);
+  expect(interpret(start, Instruction.L)).toEqual([{ x: 0, y: 0 }, Orientation.W]);
+
+  expect([Instruction.F, Instruction.F, Instruction.F].reduce(interpret, start)).toEqual([
+    { x: 0, y: 3 },
+    Orientation.N,
+  ]);
 });

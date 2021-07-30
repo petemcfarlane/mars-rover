@@ -57,7 +57,7 @@ export enum Instruction {
   L = 'L',
 }
 
-export const interpret = (instruction: Instruction, rover: Rover): Rover => {
+export const interpret = (rover: Rover, instruction: Instruction): Rover => {
   switch (instruction) {
     case Instruction.F:
       return forward(rover);
