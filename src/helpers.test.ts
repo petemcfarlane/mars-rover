@@ -8,23 +8,15 @@ test('Parse grid size', () => {
 
 test('Parse rover line', () => {
   const input = '(2, 3, E) LFRFF';
-  const expectedRover: Rover = { p: [2, 3], o: Orientation.E, isLost: false };
+  const expectedRover = new Rover([2, 3], Orientation.E);
   const instructions = [Instruction.L, Instruction.F, Instruction.R, Instruction.F, Instruction.F];
 
   expect(parseLine(input)).toEqual([expectedRover, instructions]);
 });
 
 test('Format rover to output string', () => {
-  const rover: Rover = { p: [1, 2], o: Orientation.S, isLost: false };
-  const lostRover: Rover = { p: [7, 1], o: Orientation.E, isLost: true };
-
-  expect(format(rover)).toEqual(`(1, 2, S)`);
-  expect(format(lostRover)).toEqual(`(7, 1, E) LOST`);
-});
-
-test('Format rover to output string', () => {
-  const rover: Rover = { p: [1, 2], o: Orientation.S, isLost: false };
-  const lostRover: Rover = { p: [7, 1], o: Orientation.E, isLost: true };
+  const rover = new Rover([1, 2], Orientation.S);
+  const lostRover = new Rover([7, 1], Orientation.E, true);
 
   expect(format(rover)).toEqual(`(1, 2, S)`);
   expect(format(lostRover)).toEqual(`(7, 1, E) LOST`);

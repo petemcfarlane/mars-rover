@@ -1,6 +1,6 @@
 import readline from 'readline';
 import { format, parseGrid, parseLine } from './helpers';
-import { Grid, interpretWithinGrid } from './rover';
+import { Grid } from './rover';
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -14,6 +14,6 @@ const rl = readline.createInterface({
       continue;
     }
     const [rover, instructions] = parseLine(line);
-    process.stdout.write(format(interpretWithinGrid(grid, rover, ...instructions)) + '\n');
+    process.stdout.write(format(rover.interpretWithinGrid(grid, ...instructions)) + '\n');
   }
 })();
