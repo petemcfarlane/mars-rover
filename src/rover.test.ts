@@ -9,22 +9,18 @@ test('Rotating/Moving the Mars Rover', () => {
   expect(new Rover(p, Orientation.W).interpret(Instruction.F)).toEqual(new Rover([-1, 0], Orientation.W));
 
   expect(rover.interpret(Instruction.R)).toEqual(new Rover(p, Orientation.E));
-  expect(rover.interpret(Instruction.R).interpret(Instruction.R)).toEqual(new Rover(p, Orientation.S));
-  expect(rover.interpret(Instruction.R).interpret(Instruction.R).interpret(Instruction.R)).toEqual(
-    new Rover(p, Orientation.W)
+  expect(rover.interpret(Instruction.R, Instruction.R)).toEqual(new Rover(p, Orientation.S));
+  expect(rover.interpret(Instruction.R, Instruction.R, Instruction.R)).toEqual(new Rover(p, Orientation.W));
+  expect(rover.interpret(Instruction.R, Instruction.R, Instruction.R, Instruction.R)).toEqual(
+    new Rover(p, Orientation.N)
   );
-  expect(
-    rover.interpret(Instruction.R).interpret(Instruction.R).interpret(Instruction.R).interpret(Instruction.R)
-  ).toEqual(new Rover(p, Orientation.N));
 
   expect(rover.interpret(Instruction.L)).toEqual(new Rover(p, Orientation.W));
-  expect(rover.interpret(Instruction.L).interpret(Instruction.L)).toEqual(new Rover(p, Orientation.S));
-  expect(rover.interpret(Instruction.L).interpret(Instruction.L).interpret(Instruction.L)).toEqual(
-    new Rover(p, Orientation.E)
+  expect(rover.interpret(Instruction.L, Instruction.L)).toEqual(new Rover(p, Orientation.S));
+  expect(rover.interpret(Instruction.L, Instruction.L, Instruction.L)).toEqual(new Rover(p, Orientation.E));
+  expect(rover.interpret(Instruction.L, Instruction.L, Instruction.L, Instruction.L)).toEqual(
+    new Rover(p, Orientation.N)
   );
-  expect(
-    rover.interpret(Instruction.L).interpret(Instruction.L).interpret(Instruction.L).interpret(Instruction.L)
-  ).toEqual(new Rover(p, Orientation.N));
 
   const lostRover = new Rover(p, Orientation.N, true);
 
