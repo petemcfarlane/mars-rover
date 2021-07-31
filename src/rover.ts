@@ -31,6 +31,31 @@ export class Rover2 {
         return new Rover2(newPosition, this.orientation);
     }
   }
+
+  interpretWithinGrid(grid: Grid, ...instructions: Instruction[]): Rover2 {
+    if (this.isLost || instructions.length === 0) {
+      return this;
+    }
+    const [firstInstruction, ...remainingInstructions] = instructions;
+    switch (firstInstruction) {
+      case Instruction.R:
+        return new Rover2(this.position, rotateR3[this.orientation]).interpretWithinGrid(
+          grid,
+          ...remainingInstructions
+        );
+      case Instruction.L:
+        return new Rover2(this.position, rotateL3[this.orientation]).interpretWithinGrid(
+          grid,
+          ...remainingInstructions
+        );
+      case Instruction.F:
+        const newPosition = forward2[this.orientation](this.position);
+        if (isLost(grid, newPosition)) {
+          return new Rover2(this.position, this.orientation, true);
+        }
+        return new Rover2(newPosition, this.orientation).interpretWithinGrid(grid, ...remainingInstructions);
+    }
+  }
 }
 
 export interface Rover {

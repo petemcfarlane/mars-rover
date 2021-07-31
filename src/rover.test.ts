@@ -97,4 +97,9 @@ test('Lost rover maintains previous position before it was lost', () => {
     o: Orientation.N,
     isLost: true,
   });
+
+  const rover2 = new Rover2([0, 0], Orientation.N);
+  expect(rover2.interpretWithinGrid(grid, Instruction.F, Instruction.F, Instruction.F, Instruction.F)).toEqual(
+    new Rover2([0, 2], Orientation.N, true)
+  );
 });
