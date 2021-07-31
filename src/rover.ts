@@ -5,19 +5,14 @@ export enum Orientation {
   W = 'W',
 }
 
-export interface Position {
-  readonly x: number;
-  readonly y: number;
-}
+export type Pos = [number, number];
 
-export class Rover2 implements Position {
-  readonly x: number;
-  readonly y: number;
+export class Rover2 {
+  readonly position: Pos;
   readonly orientation: Orientation;
   readonly isLost: boolean;
-  constructor(x: number, y: number, orientation: Orientation, isLost = false) {
-    this.x = x;
-    this.y = y;
+  constructor(position: Pos, orientation: Orientation, isLost = false) {
+    this.position = position;
     this.orientation = orientation;
     this.isLost = isLost;
   }
@@ -28,19 +23,18 @@ export class Rover2 implements Position {
     }
     switch (i) {
       case Instruction.R:
-        return new Rover2(this.x, this.y, rotateR3[this.orientation]);
+        return new Rover2(this.position, rotateR3[this.orientation]);
       case Instruction.L:
-        return new Rover2(this.x, this.y, rotateL3[this.orientation]);
+        return new Rover2(this.position, rotateL3[this.orientation]);
       case Instruction.F:
-        const newPosition = forward2[this.orientation]({ x: this.x, y: this.y });
-        return new Rover2(newPosition.x, newPosition.y, this.orientation);
+        const newPosition = forward2[this.orientation](this.position);
+        return new Rover2(newPosition, this.orientation);
     }
-    return new Rover2(this.x, this.y, this.orientation, this.isLost);
   }
 }
 
 export interface Rover {
-  readonly p: Position;
+  readonly p: Pos;
   readonly o: Orientation;
   readonly isLost: boolean;
 }
@@ -49,7 +43,7 @@ export const rotateR = ({ o, ...rest }: Rover): Rover => ({ ...rest, o: rotateR3
 export const rotateL = ({ o, ...rest }: Rover): Rover => ({ ...rest, o: rotateL3[o] });
 
 type Rotation = Record<Orientation, Orientation>;
-type Movement = Record<Orientation, (p: Position) => Position>;
+type Movement = Record<Orientation, (p: Pos) => Pos>;
 
 const rotateR3: Rotation = {
   [Orientation.N]: Orientation.E,
@@ -65,10 +59,10 @@ const rotateL3: Rotation = {
 };
 
 const forward2: Movement = {
-  [Orientation.N]: ({ x, y }: Position) => ({ x, y: y + 1 }),
-  [Orientation.E]: ({ x, y }: Position) => ({ x: x + 1, y }),
-  [Orientation.S]: ({ x, y }: Position) => ({ x, y: y - 1 }),
-  [Orientation.W]: ({ x, y }: Position) => ({ x: x - 1, y }),
+  [Orientation.N]: ([x, y]) => [x, y + 1],
+  [Orientation.E]: ([x, y]) => [x + 1, y],
+  [Orientation.S]: ([x, y]) => [x, y - 1],
+  [Orientation.W]: ([x, y]) => [x - 1, y],
 };
 
 export const forward = ({ p, ...rest }: Rover): Rover => ({ ...rest, p: forward2[rest.o](p) });
@@ -79,26 +73,26 @@ export enum Instruction {
   L = 'L',
 }
 
-const interpretLookup: Record<Instruction, (r: Rover) => Rover> = {
+const instructionLookup: Record<Instruction, (r: Rover) => Rover> = {
   [Instruction.F]: forward,
   [Instruction.R]: rotateR,
   [Instruction.L]: rotateL,
 };
 
 export const interpret = (start: Rover, ...instructions: Instruction[]): Rover =>
-  instructions.reduce((r: Rover, i: Instruction) => interpretLookup[i](r), start);
+  instructions.reduce((r: Rover, i: Instruction) => instructionLookup[i](r), start);
 
 export type Grid = [number, number];
 
 // todo, check, is this inclusive or exclusive?
-export const isLost = ([m, n]: Grid, { x, y }: Position): boolean => {
+export const isLost = ([m, n]: Grid, [x, y]: Pos): boolean => {
   return x < 0 || x > m || y < 0 || y > n;
 };
 
 export const interpretWithinGrid = (grid: Grid, start: Rover, ...instructions: Instruction[]): Rover => {
   let r: Rover = start;
   for (const i of instructions) {
-    const test = interpretLookup[i](r);
+    const test = instructionLookup[i](r);
     const lost = isLost(grid, test.p);
     if (lost) {
       return {
@@ -109,42 +103,4 @@ export const interpretWithinGrid = (grid: Grid, start: Rover, ...instructions: I
     r = test;
   }
   return r;
-};
-
-export const parseLine = (input: string): [Rover, Instruction[]] => {
-  const matches = /\((\d+), (\d+), ([NESW])\) ([LRF]+)/.exec(input);
-  if (matches === null) {
-    throw new Error(`Couldn't parse line ${input}`);
-  }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_, x, y, o, instructs] = matches;
-  const rover: Rover = {
-    p: { x: Number(x), y: Number(y) },
-    o: Orientation[o as keyof typeof Orientation],
-    isLost: false,
-  };
-  const instructions = instructs.split('').map((i) => Instruction[i as keyof typeof Instruction]);
-
-  return [rover, instructions];
-};
-
-export const parseGrid = (input: string): Grid => {
-  const matches = /(\d+) (\d+)/.exec(input);
-  if (matches === null) {
-    throw new Error(`Couldn't parse grid ${input}`);
-  }
-  return <Grid>matches.slice(1, 3).map(Number);
-};
-
-export const format = ({ p, o, isLost }: Rover): string => `(${p.x}, ${p.y}, ${o})${isLost ? ' LOST' : ''}`;
-
-export const run = (input: string): string => {
-  const [gridInput, ...restInput] = input.trim().split('\n');
-  const grid = parseGrid(gridInput);
-  return restInput
-    .map((line) => {
-      const [rover, instructions] = parseLine(line);
-      return format(interpretWithinGrid(grid, rover, ...instructions));
-    })
-    .join('\n');
 };
