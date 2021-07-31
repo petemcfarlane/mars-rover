@@ -79,19 +79,14 @@ export enum Instruction {
   L = 'L',
 }
 
-const interpretFunction = (instruction: Instruction) => {
-  switch (instruction) {
-    case Instruction.F:
-      return forward;
-    case Instruction.R:
-      return rotateR;
-    case Instruction.L:
-      return rotateL;
-  }
+const interpretLookup: Record<Instruction, (r: Rover) => Rover> = {
+  [Instruction.F]: forward,
+  [Instruction.R]: rotateR,
+  [Instruction.L]: rotateL,
 };
 
 export const interpret = (start: Rover, ...instructions: Instruction[]): Rover =>
-  instructions.reduce((r: Rover, i: Instruction) => interpretFunction(i)(r), start);
+  instructions.reduce((r: Rover, i: Instruction) => interpretLookup[i](r), start);
 
 export type Grid = [number, number];
 
@@ -103,7 +98,7 @@ export const isLost = ([m, n]: Grid, { x, y }: Position): boolean => {
 export const interpretWithinGrid = (grid: Grid, start: Rover, ...instructions: Instruction[]): Rover => {
   let r: Rover = start;
   for (const i of instructions) {
-    const test = interpretFunction(i)(r);
+    const test = interpretLookup[i](r);
     const lost = isLost(grid, test.p);
     if (lost) {
       return {
