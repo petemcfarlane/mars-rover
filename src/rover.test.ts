@@ -12,6 +12,7 @@ import {
   rotateL,
   rotateR,
   Rover,
+  Rover2,
   run,
 } from './rover';
 
@@ -28,9 +29,22 @@ test('Rotating the Mars Rover', () => {
   expect(rotateL(rotateL(start)).o).toEqual(Orientation.S);
   expect(rotateL(rotateL(rotateL(start))).o).toEqual(Orientation.E);
   expect(rotateL(rotateL(rotateL(rotateL(start)))).o).toEqual(Orientation.N);
+
+  const rover2 = new Rover2(0, 0, Orientation.N);
+  const lostRover2 = new Rover2(0, 0, Orientation.N, true);
+  expect(rover2.interpret(Instruction.R)).toEqual(new Rover2(0, 0, Orientation.E));
+  expect(rover2.interpret(Instruction.R).interpret(Instruction.R)).toEqual(new Rover2(0, 0, Orientation.S));
+  expect(rover2.interpret(Instruction.L)).toEqual(new Rover2(0, 0, Orientation.W));
+  expect(lostRover2.interpret(Instruction.R)).toEqual(lostRover2);
+  expect(lostRover2.interpret(Instruction.L)).toEqual(lostRover2);
 });
 
 test('Moving the Mars Rover', () => {
+  const rover2 = new Rover2(0, 0, Orientation.N);
+  const lostRover2 = new Rover2(0, 0, Orientation.N, true);
+  expect(rover2.interpret(Instruction.F)).toEqual(new Rover2(0, 1, Orientation.N));
+  expect(lostRover2.interpret(Instruction.F)).toEqual(lostRover2);
+
   const p = { x: 0, y: 0 };
 
   expect(forward({ p, o: Orientation.N, isLost: false })).toEqual({

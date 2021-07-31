@@ -6,8 +6,37 @@ export enum Orientation {
 }
 
 export interface Position {
-  x: number;
-  y: number;
+  readonly x: number;
+  readonly y: number;
+}
+
+export class Rover2 implements Position {
+  readonly x: number;
+  readonly y: number;
+  readonly orientation: Orientation;
+  readonly isLost: boolean;
+  constructor(x: number, y: number, orientation: Orientation, isLost = false) {
+    this.x = x;
+    this.y = y;
+    this.orientation = orientation;
+    this.isLost = isLost;
+  }
+
+  interpret(i: Instruction): Rover2 {
+    if (this.isLost) {
+      return this;
+    }
+    switch (i) {
+      case Instruction.R:
+        return new Rover2(this.x, this.y, rotateR3[this.orientation]);
+      case Instruction.L:
+        return new Rover2(this.x, this.y, rotateL3[this.orientation]);
+      case Instruction.F:
+        const newPosition = forward2[this.orientation]({ x: this.x, y: this.y });
+        return new Rover2(newPosition.x, newPosition.y, this.orientation);
+    }
+    return new Rover2(this.x, this.y, this.orientation, this.isLost);
+  }
 }
 
 export interface Rover {
@@ -16,44 +45,33 @@ export interface Rover {
   readonly isLost: boolean;
 }
 
-export const rotateR = ({ o, ...rest }: Rover): Rover => {
-  switch (o) {
-    case Orientation.N:
-      return { ...rest, o: Orientation.E };
-    case Orientation.E:
-      return { ...rest, o: Orientation.S };
-    case Orientation.S:
-      return { ...rest, o: Orientation.W };
-    case Orientation.W:
-      return { ...rest, o: Orientation.N };
-  }
+export const rotateR = ({ o, ...rest }: Rover): Rover => ({ ...rest, o: rotateR3[o] });
+export const rotateL = ({ o, ...rest }: Rover): Rover => ({ ...rest, o: rotateL3[o] });
+
+type Rotation = Record<Orientation, Orientation>;
+type Movement = Record<Orientation, (p: Position) => Position>;
+
+const rotateR3: Rotation = {
+  [Orientation.N]: Orientation.E,
+  [Orientation.E]: Orientation.S,
+  [Orientation.S]: Orientation.W,
+  [Orientation.W]: Orientation.N,
+};
+const rotateL3: Rotation = {
+  [Orientation.N]: Orientation.W,
+  [Orientation.W]: Orientation.S,
+  [Orientation.S]: Orientation.E,
+  [Orientation.E]: Orientation.N,
 };
 
-export const rotateL = ({ o, ...rest }: Rover): Rover => {
-  switch (o) {
-    case Orientation.N:
-      return { ...rest, o: Orientation.W };
-    case Orientation.W:
-      return { ...rest, o: Orientation.S };
-    case Orientation.S:
-      return { ...rest, o: Orientation.E };
-    case Orientation.E:
-      return { ...rest, o: Orientation.N };
-  }
+const forward2: Movement = {
+  [Orientation.N]: ({ x, y }: Position) => ({ x, y: y + 1 }),
+  [Orientation.E]: ({ x, y }: Position) => ({ x: x + 1, y }),
+  [Orientation.S]: ({ x, y }: Position) => ({ x, y: y - 1 }),
+  [Orientation.W]: ({ x, y }: Position) => ({ x: x - 1, y }),
 };
 
-export const forward = ({ p: { x, y }, o, ...rest }: Rover): Rover => {
-  switch (o) {
-    case Orientation.N:
-      return { ...rest, p: { x, y: y + 1 }, o };
-    case Orientation.E:
-      return { ...rest, p: { x: x + 1, y }, o };
-    case Orientation.S:
-      return { ...rest, p: { x, y: y - 1 }, o };
-    case Orientation.W:
-      return { ...rest, p: { x: x - 1, y }, o };
-  }
-};
+export const forward = ({ p, ...rest }: Rover): Rover => ({ ...rest, p: forward2[rest.o](p) });
 
 export enum Instruction {
   F = 'F',
