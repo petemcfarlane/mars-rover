@@ -43,3 +43,11 @@ test('Lost rover maintains previous position before it was lost', () => {
     new Rover([0, 2], Orientation.N, true)
   );
 });
+
+test('Format rover to output string', () => {
+  const rover = new Rover([1, 2], Orientation.S);
+  const lostRover = new Rover([7, 1], Orientation.E, true);
+
+  expect(rover.stringify()).toEqual(`(1, 2, S)`);
+  expect(lostRover.stringify()).toEqual(`(7, 1, E) LOST`);
+});

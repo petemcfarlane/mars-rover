@@ -21,16 +21,13 @@ export const parseGrid = (input: string): Grid => {
   return <Grid>matches.slice(1, 3).map(Number);
 };
 
-export const format = ({ position: [x, y], orientation, isLost }: Rover): string =>
-  `(${x}, ${y}, ${orientation})${isLost ? ' LOST' : ''}`;
-
 export const run = (input: string): string => {
   const [gridInput, ...restInput] = input.trim().split('\n');
   const grid = parseGrid(gridInput);
   return restInput
     .map((line) => {
       const [rover, instructions] = parseLine(line);
-      return format(rover.interpretWithinGrid(grid, ...instructions));
+      return rover.interpretWithinGrid(grid, ...instructions).stringify();
     })
     .join('\n');
 };

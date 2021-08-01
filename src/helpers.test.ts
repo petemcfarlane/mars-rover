@@ -1,4 +1,4 @@
-import { format, parseGrid, parseLine, run } from './helpers';
+import { parseGrid, parseLine, run } from './helpers';
 import { Instruction, Orientation, Rover } from './rover';
 
 test('Parse grid size', () => {
@@ -12,14 +12,6 @@ test('Parse rover line', () => {
   const instructions = [Instruction.L, Instruction.F, Instruction.R, Instruction.F, Instruction.F];
 
   expect(parseLine(input)).toEqual([expectedRover, instructions]);
-});
-
-test('Format rover to output string', () => {
-  const rover = new Rover([1, 2], Orientation.S);
-  const lostRover = new Rover([7, 1], Orientation.E, true);
-
-  expect(format(rover)).toEqual(`(1, 2, S)`);
-  expect(format(lostRover)).toEqual(`(7, 1, E) LOST`);
 });
 
 test('Parses an input to expected output', () => {

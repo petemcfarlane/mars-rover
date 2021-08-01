@@ -81,6 +81,11 @@ export class Rover {
     }
     return this.interpret(firstInstruction).interpretWithinGrid(grid, ...remainingInstructions);
   }
+
+  stringify(): string {
+    const [x, y] = this.position;
+    return `(${x}, ${y}, ${this.orientation})${this.isLost ? ' LOST' : ''}`;
+  }
 }
 
 // todo, check, is this inclusive or exclusive?
