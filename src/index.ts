@@ -1,13 +1,15 @@
 import readline from 'readline';
+import fs from 'fs';
 import { parseGrid, parseLine } from './helpers';
 import { Grid } from './rover';
 
-const rl = readline.createInterface({
-  input: process.stdin,
-});
-
 (async () => {
   try {
+    const [filename] = process.argv.slice(2, 3);
+    const input = typeof filename !== 'undefined' ? fs.createReadStream(filename) : process.stdin;
+
+    const rl = readline.createInterface({ input });
+
     let grid: Grid | undefined;
     for await (const line of rl) {
       if (typeof grid === 'undefined') {
