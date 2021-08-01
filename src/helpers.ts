@@ -3,7 +3,7 @@ import { Grid, Instruction, Orientation, Rover } from './rover';
 export const parseLine = (input: string): [Rover, Instruction[]] => {
   const matches = /\((\d+), (\d+), ([NESW])\) ([LRF]+)/.exec(input);
   if (matches === null) {
-    throw new Error(`Couldn't parse line ${input}`);
+    throw new Error(`Couldn't parse line "${input}"`);
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, x, y, o, instructs] = matches;
@@ -16,7 +16,7 @@ export const parseLine = (input: string): [Rover, Instruction[]] => {
 export const parseGrid = (input: string): Grid => {
   const matches = /(\d+) (\d+)/.exec(input);
   if (matches === null) {
-    throw new Error(`Couldn't parse grid ${input}`);
+    throw new Error(`Couldn't parse grid "${input}"`);
   }
   return <Grid>matches.slice(1, 3).map(Number);
 };

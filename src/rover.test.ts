@@ -1,32 +1,26 @@
 import { Grid, Instruction, isLost, Orientation, Pos, Rover } from './rover';
 
+const { N, E, S, W } = Orientation;
+const { F, R, L } = Instruction;
+
 test('Rotating/Moving the Mars Rover', () => {
   const p: Pos = [0, 0];
-  const rover = new Rover(p, Orientation.N);
-  expect(new Rover(p, Orientation.N).interpret(Instruction.F)).toEqual(new Rover([0, 1], Orientation.N));
-  expect(new Rover(p, Orientation.E).interpret(Instruction.F)).toEqual(new Rover([1, 0], Orientation.E));
-  expect(new Rover(p, Orientation.S).interpret(Instruction.F)).toEqual(new Rover([0, -1], Orientation.S));
-  expect(new Rover(p, Orientation.W).interpret(Instruction.F)).toEqual(new Rover([-1, 0], Orientation.W));
+  const rover = new Rover(p, N);
 
-  expect(rover.interpret(Instruction.R)).toEqual(new Rover(p, Orientation.E));
-  expect(rover.interpret(Instruction.R, Instruction.R)).toEqual(new Rover(p, Orientation.S));
-  expect(rover.interpret(Instruction.R, Instruction.R, Instruction.R)).toEqual(new Rover(p, Orientation.W));
-  expect(rover.interpret(Instruction.R, Instruction.R, Instruction.R, Instruction.R)).toEqual(
-    new Rover(p, Orientation.N)
-  );
+  expect(new Rover(p, N).interpret(F)).toEqual(new Rover([0, 1], N));
+  expect(new Rover(p, E).interpret(F)).toEqual(new Rover([1, 0], E));
+  expect(new Rover(p, S).interpret(F)).toEqual(new Rover([0, -1], S));
+  expect(new Rover(p, W).interpret(F)).toEqual(new Rover([-1, 0], W));
 
-  expect(rover.interpret(Instruction.L)).toEqual(new Rover(p, Orientation.W));
-  expect(rover.interpret(Instruction.L, Instruction.L)).toEqual(new Rover(p, Orientation.S));
-  expect(rover.interpret(Instruction.L, Instruction.L, Instruction.L)).toEqual(new Rover(p, Orientation.E));
-  expect(rover.interpret(Instruction.L, Instruction.L, Instruction.L, Instruction.L)).toEqual(
-    new Rover(p, Orientation.N)
-  );
+  expect(rover.interpret(R)).toEqual(new Rover(p, E));
+  expect(rover.interpret(R, R)).toEqual(new Rover(p, S));
+  expect(rover.interpret(R, R, R)).toEqual(new Rover(p, W));
+  expect(rover.interpret(R, R, R, R)).toEqual(new Rover(p, N));
 
-  const lostRover = new Rover(p, Orientation.N, true);
-
-  expect(lostRover.interpret(Instruction.F)).toEqual(lostRover);
-  expect(lostRover.interpret(Instruction.R)).toEqual(lostRover);
-  expect(lostRover.interpret(Instruction.L)).toEqual(lostRover);
+  expect(rover.interpret(L)).toEqual(new Rover(p, W));
+  expect(rover.interpret(L, L)).toEqual(new Rover(p, S));
+  expect(rover.interpret(L, L, L)).toEqual(new Rover(p, E));
+  expect(rover.interpret(L, L, L, L)).toEqual(new Rover(p, N));
 });
 
 test('Lost rover maintains previous position before it was lost', () => {
@@ -38,16 +32,20 @@ test('Lost rover maintains previous position before it was lost', () => {
   expect(isLost(grid, [1, -2])).toEqual(true);
   expect(isLost(grid, [1, 4])).toEqual(true);
 
-  const rover = new Rover([0, 0], Orientation.N);
-  expect(rover.interpretWithinGrid(grid, Instruction.F, Instruction.F, Instruction.F, Instruction.F)).toEqual(
-    new Rover([0, 2], Orientation.N, true)
-  );
+  const rover = new Rover([0, 0], N);
+  expect(rover.interpretWithinGrid(grid, F, F, F, F)).toEqual(new Rover([0, 2], N, true));
+
+  const lostRover = new Rover([0, 0], N, true);
+
+  expect(lostRover.interpret(F)).toEqual(lostRover);
+  expect(lostRover.interpret(R)).toEqual(lostRover);
+  expect(lostRover.interpret(L)).toEqual(lostRover);
 });
 
 test('Format rover to output string', () => {
-  const rover = new Rover([1, 2], Orientation.S);
-  const lostRover = new Rover([7, 1], Orientation.E, true);
+  const rover = new Rover([1, 2], S);
+  const lostRover = new Rover([7, 1], E, true);
 
-  expect(rover.stringify()).toEqual(`(1, 2, S)`);
-  expect(lostRover.stringify()).toEqual(`(7, 1, E) LOST`);
+  expect(rover.stringify()).toEqual('(1, 2, S)');
+  expect(lostRover.stringify()).toEqual('(7, 1, E) LOST');
 });

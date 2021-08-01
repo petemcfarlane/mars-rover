@@ -4,21 +4,22 @@ export enum Orientation {
   S = 'S',
   W = 'W',
 }
+const { N, E, S, W } = Orientation;
 
 type Rotation = Record<Orientation, Orientation>;
 
 const rotateR: Rotation = {
-  [Orientation.N]: Orientation.E,
-  [Orientation.E]: Orientation.S,
-  [Orientation.S]: Orientation.W,
-  [Orientation.W]: Orientation.N,
+  [N]: E,
+  [E]: S,
+  [S]: W,
+  [W]: N,
 };
 
 const rotateL: Rotation = {
-  [Orientation.N]: Orientation.W,
-  [Orientation.W]: Orientation.S,
-  [Orientation.S]: Orientation.E,
-  [Orientation.E]: Orientation.N,
+  [N]: W,
+  [W]: S,
+  [S]: E,
+  [E]: N,
 };
 
 export enum Instruction {
@@ -26,13 +27,14 @@ export enum Instruction {
   R = 'R',
   L = 'L',
 }
+const { F, R, L } = Instruction;
 
 type Movement = Record<Orientation, (p: Pos) => Pos>;
 const moveForward: Movement = {
-  [Orientation.N]: ([x, y]) => [x, y + 1],
-  [Orientation.E]: ([x, y]) => [x + 1, y],
-  [Orientation.S]: ([x, y]) => [x, y - 1],
-  [Orientation.W]: ([x, y]) => [x - 1, y],
+  [N]: ([x, y]) => [x, y + 1],
+  [E]: ([x, y]) => [x + 1, y],
+  [S]: ([x, y]) => [x, y - 1],
+  [W]: ([x, y]) => [x - 1, y],
 };
 
 export type Grid = [number, number];
@@ -57,11 +59,11 @@ export class Rover {
     const [firstInstruction, ...remainingInstructions] = instructions;
 
     switch (firstInstruction) {
-      case Instruction.R:
+      case R:
         return new Rover(this.position, rotateR[this.orientation]).interpret(...remainingInstructions);
-      case Instruction.L:
+      case L:
         return new Rover(this.position, rotateL[this.orientation]).interpret(...remainingInstructions);
-      case Instruction.F:
+      case F:
         const newPosition = moveForward[this.orientation](this.position);
         return new Rover(newPosition, this.orientation).interpret(...remainingInstructions);
     }
@@ -72,7 +74,7 @@ export class Rover {
       return this;
     }
     const [firstInstruction, ...remainingInstructions] = instructions;
-    if (firstInstruction === Instruction.F) {
+    if (firstInstruction === F) {
       const newPosition = moveForward[this.orientation](this.position);
       if (isLost(grid, newPosition)) {
         return new Rover(this.position, this.orientation, true);
@@ -89,6 +91,4 @@ export class Rover {
 }
 
 // todo, check, is this inclusive or exclusive?
-export const isLost = ([m, n]: Grid, [x, y]: Pos): boolean => {
-  return x < 0 || x > m || y < 0 || y > n;
-};
+export const isLost = ([m, n]: Grid, [x, y]: Pos): boolean => x < 0 || x > m || y < 0 || y > n;

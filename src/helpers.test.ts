@@ -1,6 +1,9 @@
 import { parseGrid, parseLine, run } from './helpers';
 import { Instruction, Orientation, Rover } from './rover';
 
+const { E } = Orientation;
+const { F, R, L } = Instruction;
+
 test('Parse grid size', () => {
   const input = '3 4';
   expect(parseGrid(input)).toEqual([3, 4]);
@@ -8,8 +11,8 @@ test('Parse grid size', () => {
 
 test('Parse rover line', () => {
   const input = '(2, 3, E) LFRFF';
-  const expectedRover = new Rover([2, 3], Orientation.E);
-  const instructions = [Instruction.L, Instruction.F, Instruction.R, Instruction.F, Instruction.F];
+  const expectedRover = new Rover([2, 3], E);
+  const instructions = [L, F, R, F, F];
 
   expect(parseLine(input)).toEqual([expectedRover, instructions]);
 });

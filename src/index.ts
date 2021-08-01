@@ -7,13 +7,18 @@ const rl = readline.createInterface({
 });
 
 (async () => {
-  let grid: Grid | undefined;
-  for await (const line of rl) {
-    if (typeof grid === 'undefined') {
-      grid = parseGrid(line);
-      continue;
+  try {
+    let grid: Grid | undefined;
+    for await (const line of rl) {
+      if (typeof grid === 'undefined') {
+        grid = parseGrid(line);
+        continue;
+      }
+      const [rover, instructions] = parseLine(line);
+      process.stdout.write(rover.interpretWithinGrid(grid, ...instructions).stringify() + '\n');
     }
-    const [rover, instructions] = parseLine(line);
-    process.stdout.write(rover.interpretWithinGrid(grid, ...instructions).stringify() + '\n');
+  } catch (e) {
+    console.error(e.message);
+    process.exit(1);
   }
 })();
